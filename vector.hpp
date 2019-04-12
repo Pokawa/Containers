@@ -22,6 +22,7 @@ namespace cw
         typedef RandomAccessIterator<T> iterator;
 
         vector();
+        ~vector();
         explicit vector(const std::size_t &);
         explicit vector(const std::size_t &, const T&);
         vector(std::initializer_list<T>);
@@ -208,6 +209,11 @@ namespace cw
         for (std::size_t a = i; a < i + values.size(); a++)
             first[a] = *(values.begin() + a - i);
         last += values.size();
+    }
+
+    template<class T>
+    vector<T>::~vector() {
+        delete[] first;
     }
 }
 
