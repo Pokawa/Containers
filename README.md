@@ -1,2 +1,2 @@
 # Containers
-My C++ implementation of containers.
+My C++ implementation of stl-like containers.
