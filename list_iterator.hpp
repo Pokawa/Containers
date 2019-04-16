@@ -10,18 +10,21 @@
 namespace cw
 {
     template <class T>
+    struct node
+    {
+        T value;
+        node* next;
+        node* previous;
+    };
+
+    template <class T>
     class ListIterator
     {
-        struct node
-        {
-            T value;
-            node* next;
-            node* previous;
-        };
+        typedef node<T> node;
         node*ptr;
 
     public:
-        explicit ListIterator( void*);
+        explicit ListIterator( node*);
         ListIterator(const ListIterator<T>&);
         ListIterator<T>&operator++();
         const ListIterator<T> operator++(int);
@@ -41,11 +44,12 @@ namespace cw
         bool operator<=(const ListIterator<T>&) const;
         bool operator>(const ListIterator<T>&) const;
         bool operator>=(const ListIterator<T>&) const;
+        node* data() const;
     };
 
     template<class T>
-    ListIterator<T>::ListIterator( void* ptr) {
-        this->ptr = (node*)ptr;
+    ListIterator<T>::ListIterator( node* ptr) {
+        this->ptr = ptr;
     }
 
     template<class T>
@@ -157,6 +161,11 @@ namespace cw
     template<class T>
     ListIterator<T>::ListIterator(const ListIterator<T> & in) {
         ptr = in.ptr;
+    }
+
+    template<class T>
+    typename ListIterator<T>::node *ListIterator<T>::data() const{
+        return ptr;
     }
 }
 
