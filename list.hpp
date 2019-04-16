@@ -21,6 +21,7 @@ namespace cw
     public:
         typedef cw::ListIterator<T> Iterator;
         List();
+        ~List();
         List(size_type, const T&);
         explicit List(size_type);
         List(std::initializer_list<T>);
@@ -28,35 +29,49 @@ namespace cw
         template <class Iter>
         List(Iter, Iter);
 
+        //Iterators
+        Iterator begin() const;
+        Iterator end() const;
 
+        //Capacity
+        size_type size();
+        bool empty();
+
+        //Modifiers
         void pushBack(const T&);
         void pushFront(const T&);
         void popBack();
         void popFront();
-        T& front();
-        T& back();
-        void remove(const T&);
-        //TODO removeIf template <class Predicate>
-        //void removeIf (Predicate pred);
-        void resize(size_type);
-        void reverse();
-        size_type size() const;
-        T&operator[](size_type);
-        Iterator begin() const;
-        Iterator end() const;
-        bool empty();
-        void clear();
         void erase(Iterator);
+        void clear();
         void erase(Iterator, Iterator);
         void insert(size_type, const T&, Iterator);
         void insert(Iterator, const T&);
-        void splice(Iterator, List<T>&);
-        void splice(Iterator, List<T>&, Iterator);
-        void splice(Iterator, List<T>&, Iterator, Iterator);
         template <class InputIterator>
         void insert(Iterator, InputIterator, InputIterator);
         void insert(Iterator, std::initializer_list<T>);
+
+        //Access
+        T& front();
+        T& back();
+        T&operator[](size_type);
+
+        //Opearations
+        size_type remove(const T&);
+        template <class Predicate>
+        size_type removeIf (Predicate pred);
+        void resize(size_type);
+        void reverse();
+        void splice(Iterator, List<T>&);
+        void splice(Iterator, List<T>&, Iterator);
+        void splice(Iterator, List<T>&, Iterator, Iterator);
+        void swap(List<T>&);
+        size_type unique();
+        template< class BinaryPredicate >
+        size_type unique(BinaryPredicate);
     };
+
+
 
     template<class T>
     List<T>::List() {
@@ -122,7 +137,7 @@ namespace cw
     }
 
     template<class T>
-    typename List<T>::size_type List<T>::size() const {
+    typename List<T>::size_type List<T>::size() {
         return siz;
     }
 
@@ -220,14 +235,6 @@ namespace cw
     }
 
     template<class T>
-    void List<T>::remove(const T & value) {
-        for (auto i = begin(); i != end();)
-            if ((i++).data()->value == value)
-                erase(i-1);
-
-    }
-
-    template<class T>
     void List<T>::resize(List::size_type newSize) {
         if (newSize < siz)
             erase(begin()+newSize, end());
@@ -248,7 +255,47 @@ namespace cw
      std::swap(point->next, point->previous);
     }
 
+    template<class T>
+    typename List<T>::size_type List<T>::remove(const T & value) {
+        return removeIf([&](T& n){return n == value;});
+    }
 
+
+    template<class T>
+    template<class Predicate>
+    typename List<T>::size_type List<T>::removeIf(Predicate pred) {
+        auto tmp = siz;
+        for (auto i = begin(); i != end();)
+            if (pred((i++).data()->value))
+                erase(i - 1);
+        return tmp - siz;
+    }
+
+    template<class T>
+    List<T>::~List() {
+        clear();
+        delete point;
+    }
+
+    template<class T>
+    void List<T>::swap(List<T> & in) {
+        std::swap(this->point, in.point);
+    }
+
+    template<class T>
+    typename List<T>::size_type List<T>::unique() {
+        return unique([](T& a, T& b){return a == b;});
+    }
+
+    template<class T>
+    template<class BinaryPredicate>
+    typename List<T>::size_type List<T>::unique(BinaryPredicate p) {
+        auto tmp = siz;
+        for (auto i = begin(); i != end(); i++)
+            while (p(*i, *(i + 1)))
+                erase(i + 1);
+        return tmp - siz;
+    }
 }
 
 
