@@ -26,8 +26,11 @@ namespace cw
         explicit List(size_type);
         List(std::initializer_list<T>);
         List(const List<T>&);
+        List(List<T>&&);
         template <class Iter>
         List(Iter, Iter);
+        List<T>& operator=(const List<T>&);
+        List<T>& operator=(List<T>&&);
 
         //Iterators
         Iterator begin() const;
@@ -296,6 +299,33 @@ namespace cw
                 erase(i + 1);
         return tmp - siz;
     }
+
+    template<class T>
+    List<T>::List(List<T> && in) {
+        point = in.point;
+        siz = in.siz;
+        in.clear();
+        in.point = nullptr;
+    }
+
+    template<class T>
+    List<T> &List<T>::operator=(const List<T> & in) {
+        clear();
+        for (auto i = in.begin(); i != in.end(); pushback(*(i++)));
+        return *this;
+    }
+
+    template<class T>
+    List<T> &List<T>::operator=(List<T> && in) {
+        clear();
+        point = in.point;
+        siz = in.siz;
+        in.clear();
+        in.point = nullptr;
+        return *this;
+    }
+
+
 }
 
 
